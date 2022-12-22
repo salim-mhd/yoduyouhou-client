@@ -35,9 +35,9 @@ const SignupPage = () => {
                 } else {
                     if (res.data.alredyUser) {
                         Swal.fire({
-                            icon: 'error',
+                            icon: 'info',
                             title: 'Registration Failed...',
-                            text: 'You Already Registerd your Account!',
+                            text: 'Email is Alrady Exist!',
                         }).then(() => {
                             localStorage.setItem('user', res.data.res.firstname)
                             navigate('/dashboard')
