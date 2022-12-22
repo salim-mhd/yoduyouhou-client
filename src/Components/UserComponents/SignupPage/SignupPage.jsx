@@ -106,7 +106,7 @@ const SignupPage = () => {
     return (
         <>
             <div className='flex justify-center align-middle backgroundimage'>
-                <form className="rounded-md bg-white m-10 shadow-xl lg:w-1/3 p-10 border mt-20 text-green-600 border-gray-100 ">
+                <form className="rounded-md bg-white m-10 shadow-xl lg:w-1/3 p-10 border mt-20 text-blue-600 border-gray-100 ">
                     <h1 className="text-2xl text-center font-bold lg:text-4xl">Registration Form</h1>
                     <p className="pb-4 text-center text-gray-500 mb-10">Welcome. Add Your Details</p>
 
