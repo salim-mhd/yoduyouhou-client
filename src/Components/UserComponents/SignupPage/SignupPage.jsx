@@ -29,8 +29,8 @@ const SignupPage = () => {
                 if (res.data.userBlock) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: 'Your Account is Temporary Bocked!',
+                        title: 'Account Blocked',
+                        text: 'Your Account is Temporary Blocked!',
                     })
                 } else {
                     if (res.data.alredyUser) {
@@ -43,8 +43,16 @@ const SignupPage = () => {
                             navigate('/dashboard')
                         })
                     } else {
-                        localStorage.setItem('user', res.data.res.firstname)
-                        navigate('/dashboard')
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Your Details has been saved',
+                            showConfirmButton: false,
+                            timer: 1000
+                        }).then(() => {
+                            localStorage.setItem('user', res.data.res.firstname)
+                            navigate('/dashboard')
+                        })
+
                     }
                 }
             })
