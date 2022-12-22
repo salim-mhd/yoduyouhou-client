@@ -1,31 +1,34 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
-import './dashboardPage.css'
 
 const DashboardPage = () => {
 
   const [string, setString] = useState('')
   const [reverseString, setReverseString] = useState('');
-  const reverseStr = () => {
-    var rev = string.split('')
-    const regex= /[A-Za-z]/;
-    let n=rev.length
-    for(var i=0 ,j=n-1; i<n/2; i++, j--){
-      if(regex.test(rev[i])){
 
-        if(regex.test(rev[j])){
-          let temp = rev[i];
-          rev[i] = rev[j];
-          rev[j] = temp;
-        }else{
-          i--;
+  const reverseStr = () => {
+    let array = string.split('')
+    const regex = /[A-Za-z0-9]/;
+    let j = array.length
+
+    for (let i = 0; i <= j; i++) {
+      if (regex.test(array[i])) {
+        for (j = j - 1; j >= i; j--) {
+          if (regex.test(array[j])) {
+            let temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+            break;
+          } else {
+            continue;
+          }
         }
-      }else{
-        j++;
+      } else {
+        continue;
       }
     }
 
-    setReverseString(rev)
+    setReverseString(array)
   }
 
   return (

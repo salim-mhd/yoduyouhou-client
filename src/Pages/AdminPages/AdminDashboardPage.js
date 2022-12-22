@@ -6,8 +6,8 @@ import AdminNavbar from '../../Components/AdiminComponents/AdminNavbar/AdminNavb
 const AdminDashboardPage = () => {
   return (
     <>
-    <AdminNavbar/>
-    <AdminDashboard/>
+      <AdminNavbar />
+      <AdminDashboard />
     </>
   )
 }

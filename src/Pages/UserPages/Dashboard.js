@@ -6,7 +6,7 @@ import Navbar from '../../Components/UserComponents/Navbar/Navbar'
 const Dashboard = () => {
     return (
         <>
-            <Navbar/>
+            <Navbar />
             <DashboardPage />
         </>
     )

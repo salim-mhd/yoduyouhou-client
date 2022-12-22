@@ -1,17 +1,27 @@
 import React from 'react'
 import Swal from 'sweetalert2'
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getUserDetails, changeUserStatus, deleteUser, deleteAllUser } from '../../../api/Requests/adminRequests/AdminRequests'
 
 const AdminDashboard = () => {
+  const navigate = useNavigate()
   const [usersDetals, setUserDetails] = useState([])
+  const [change,setChange]=useState('')
 
-  useEffect(() => {
+  useEffect(()=>{
     getUserDetails().then((res) => {
       let users = res.data.users
       setUserDetails(users)
     })
-  })
+  },[])
+
+  const getUserDate=()=>{
+    getUserDetails().then((res) => {
+      let users = res.data.users
+      setUserDetails(users)
+    })
+  }
 
   const blockOrUnbolockUser = (userId) => {
     Swal.fire({
@@ -23,7 +33,9 @@ const AdminDashboard = () => {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-        changeUserStatus(userId)
+        changeUserStatus(userId).then(()=>{
+          getUserDate()
+        })
       }
     })
     
@@ -41,11 +53,7 @@ const AdminDashboard = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteUser(userId).then(() => {
-          Swal.fire(
-            'Deleted!',
-            'User file has been deleted.',
-            'success'
-          )
+          getUserDate()
         })
       }
     })
@@ -63,15 +71,13 @@ const AdminDashboard = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteAllUser().then(() => {
-          Swal.fire(
-            'Deleted!',
-            'All users file has been deleted.',
-            'success'
-          )
+          localStorage.removeItem('user')
+          getUserDate()
         })
       }
     })
   }
+
 
   return (
     <>
@@ -104,6 +110,8 @@ const AdminDashboard = () => {
               </thead>
               <tbody class="text-gray-500">
                 {usersDetals.map((user) => {
+                  const my_date = user.createdAt;
+                  let date = new Date(my_date).toString().split(' ').splice(0,5).join(' ');
                   return (
                     <tr>
                       <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
@@ -118,11 +126,11 @@ const AdminDashboard = () => {
                         <p class="whitespace-no-wrap">{user.email}</p>
                       </td>
                       <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <p class="whitespace-no-wrap">{user.createdat}</p>
+                        <p class="whitespace-no-wrap">{date}</p>
                       </td>
 
                       <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <p onClick={() => { blockOrUnbolockUser(user._id) }} class="whitespace-no-wrap m-5">{user.status === "block" ? <i class="fa-solid fa-lock text-2xl text-red-600"></i> : <i class="fa-solid fa-lock-open text-2xl text-green-700"></i>}</p>
+                        <p onClick={() => { blockOrUnbolockUser(user._id) }} class="whitespace-no-wrap m-5">{user.block ? <i class="fa-solid fa-lock text-2xl text-red-600"></i> : <i class="fa-solid fa-lock-open text-2xl text-green-700"></i>}</p>
                       </td>
 
                       <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">

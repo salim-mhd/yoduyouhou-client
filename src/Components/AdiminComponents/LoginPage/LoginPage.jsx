@@ -11,28 +11,25 @@ const LoginPage = () => {
   const [password, setPassword] = useState('')
   const [frontentError, setFrontError] = useState('')
   const [serverError, setServerError] = useState('')
+  const [isSubmit, setIsSubmit] = useState(false)
+
   const error = {}
   const regexEmail = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 
   useEffect(() => {
-    if (!email) {
-      error.email = 'Email Name is Required !'
-    } else if (!regexEmail.test(email)) {
-      error.email = 'Email is Not Valid'
+    if (Object.keys(frontentError).length === 0 && isSubmit) {
+      let adminInformations = { email, password }
+      postAdminLogin(adminInformations).then((res) => {
+        if (res.data.admin) {
+          localStorage.setItem('admin', true)
+          navigate('/admin/dashboard')
+        } else {
+          setServerError(res.data.error)
+        }
+      })
     }
-    setFrontError(error)
-  }, [email])
+  }, [frontentError])
 
-  useEffect(() => {
-    if (!password) {
-      error.password = 'Password Name is Required !'
-    } else if (password.length <= 6) {
-      error.password = 'Password Name must be more than 6 Letters'
-    } else if (password.length >= 10) {
-      error.password = 'Password Name should not exceed 10 Letters'
-    }
-    setFrontError(error)
-  }, [password])
 
   const validate = (email, password) => {
     // ----------------------------------- email verification ------------------------------------------ \\
@@ -54,20 +51,7 @@ const LoginPage = () => {
 
   const submit = (e) => {
     setFrontError(validate(email, password));
-    if (!frontentError.email && !frontentError.password) {
-
-      let adminInformations = { email, password }
-      postAdminLogin(adminInformations).then((res) => {
-        if (res.data.admin) {
-          localStorage.setItem('admin',true)
-          navigate('/admin/dashboard')
-        } else {
-          setServerError(res.data.error)
-        }
-      })
-    } else {
-
-    }
+    setIsSubmit(true)
   }
 
   return (
