@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
-
 import { postUserRegister } from '../../../api/Requests/userRequests/UserRequsts'
-
 import './signupPage.css'
+import { ToastContainer, toast } from 'react-toastify';
+
 
 const SignupPage = () => {
     const navigate = useNavigate()
-
+    
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
@@ -19,47 +19,71 @@ const SignupPage = () => {
     const regexFirstName = /^[A-Za-z][A-Za-z]{0,20}$/i;
     const regexLastName = /^[A-Za-z. ][A-Za-z. ]{0,20}$/i;
     const regexEmail = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    let userInformatins = { firstName, lastName, email };
 
+
+ 
 
     useEffect(() => {
+        
+        if(localStorage.user){
+            navigate('/dashboard')
+        }
+       
         if (Object.keys(frontentError).length === 0 && isSubmit) {
 
-            let userInformatins = { firstName, lastName, email };
+            // register user 
             postUserRegister(userInformatins).then((res) => {
                 if (res.data.userBlock) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Account Blocked',
-                        text: 'Your Account is Temporary Blocked!',
-                    })
+                    toast.error('Sorry,Your account is not accessible right now!', {
+                        position: "top-right",
+                        autoClose: 3000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                        })
+                   
                 } else {
                     if (res.data.alredyUser) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Registration Failed...',
-                            text: 'Email is Alrady Exist!',
-                        }).then(() => {
+                        toast.warning('You already have an account', {
+                            position: "top-right",
+                            autoClose: 2000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "colored",
+                            })
                             localStorage.setItem('user', res.data.res.firstname)
                             navigate('/dashboard')
-                        })
+                      
                     } else {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Your Details has been saved',
-                            showConfirmButton: false,
-                            timer: 1000
-                        }).then(() => {
-                            localStorage.setItem('user', res.data.res.firstname)
-                            navigate('/dashboard')
-                        })
 
+                            localStorage.setItem('user', res.data.res.firstname)
+                            toast.info('You have successfully registered!', {
+                                position: "top-right",
+                                autoClose: 2000,
+                                hideProgressBar: true,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                                theme: "colored",
+                                })
+                            navigate('/dashboard')
                     }
                 }
+
             })
+
+
 
         }
     }, [frontentError])
-
 
     const validate = (firstName, lastName, email) => {
         // ----------------------------------- first Name verification ------------------------------------------ \\

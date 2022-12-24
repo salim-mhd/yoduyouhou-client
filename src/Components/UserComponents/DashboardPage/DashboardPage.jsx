@@ -1,13 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { io } from 'socket.io-client'
 
 
 const DashboardPage = () => {
 
   const [string, setString] = useState('')
   const [reverseString, setReverseString] = useState('');
+  const [userData, setUserData] = useState({})
+  const [socket, setSoket] = useState(null)
+
+
+  useEffect(() => {
+    setSoket(io('http://localhost:8800'))
+  }, [])
+
+  useEffect(() => {
+    socket?.emit('setdata', userData)
+  }, [socket, userData])
 
   const reverseStr = () => {
-
+    setUserData('hey')
     setString('')
     let array = string.split('')
     const regex = /[A-Za-z0-9]/;

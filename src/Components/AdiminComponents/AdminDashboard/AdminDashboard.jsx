@@ -1,22 +1,30 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Swal from 'sweetalert2'
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { getUserDetails, changeUserStatus, deleteUser, deleteAllUser } from '../../../api/Requests/adminRequests/AdminRequests'
 
-const AdminDashboard = () => {
-  const navigate = useNavigate()
-  const [usersDetals, setUserDetails] = useState([])
-  const [change,setChange]=useState('')
+import { io } from 'socket.io-client'
 
-  useEffect(()=>{
+const AdminDashboard = () => {
+  const [usersDetals, setUserDetails] = useState([])
+  const [socket, setSoket] = useState(null)
+  const [check, setCheck] = useState(false)
+
+  useEffect(() => {
+    setSoket(io('http://localhost:8800'))
+  }, [])
+
+  useEffect(() => {
+    socket?.on('sentToAdmin', arg => {
+      setCheck(!check)
+    })
     getUserDetails().then((res) => {
       let users = res.data.users
       setUserDetails(users)
     })
-  },[])
+  }, [socket, check])
 
-  const getUserDate=()=>{
+  const getUserDate = () => {
     getUserDetails().then((res) => {
       let users = res.data.users
       setUserDetails(users)
@@ -33,12 +41,12 @@ const AdminDashboard = () => {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-        changeUserStatus(userId).then(()=>{
+        changeUserStatus(userId).then(() => {
           getUserDate()
         })
       }
     })
-    
+
   }
 
   const deleteUserDetails = (userId) => {
@@ -95,57 +103,58 @@ const AdminDashboard = () => {
           </div>
         </div>
         {usersDetals.length != 0 ?
-        <div class="overflow-y-hidden rounded-lg border">
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead>
-                <tr class="bg-blue-600 text-left text-xs font-semibold uppercase tracking-widest text-white">
-                  <th class="px-5 py-3">First Name</th>
-                  <th class="px-5 py-3">Last Name</th>
-                  <th class="px-5 py-3">Email Id</th>
-                  <th class="px-5 py-3">Created at</th>
-                  <th class="px-5 py-3">Status</th>
-                  <th class="px-5 py-3 text-center">Delete</th>
-                </tr>
-              </thead>
-              <tbody class="text-gray-500">
-                {usersDetals.map((user) => {
-                  const my_date = user.createdAt;
-                  let date = new Date(my_date).toString().split(' ').splice(0,5).join(' ');
-                  return (
-                    <tr>
-                      <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <p class="whitespace-no-wrap font-semibold ">{user.firstname}</p>
-                      </td>
+          <div class="overflow-y-hidden rounded-lg border">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="bg-blue-600 text-left text-xs font-semibold uppercase tracking-widest text-white">
+                    <th class="px-5 py-3">First Name</th>
+                    <th class="px-5 py-3">Last Name</th>
+                    <th class="px-5 py-3">Email Id</th>
+                    <th class="px-5 py-3">Created at</th>
+                    <th class="px-5 py-3">Status</th>
+                    <th class="px-5 py-3 text-center">Delete</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gray-500">
 
-                      <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <p class="whitespace-no-wrap">{user.lastname}</p>
-                      </td>
+                  {usersDetals.map((user) => {
+                    const my_date = user.createdAt;
+                    let date = new Date(my_date).toString().split(' ').splice(0, 5).join(' ');
+                    return (
+                      <tr>
+                        <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                          <p class="whitespace-no-wrap font-semibold ">{user.firstname}</p>
+                        </td>
 
-                      <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <p class="whitespace-no-wrap">{user.email}</p>
-                      </td>
-                      <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <p class="whitespace-no-wrap">{date}</p>
-                      </td>
+                        <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                          <p class="whitespace-no-wrap">{user.lastname}</p>
+                        </td>
 
-                      <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <p onClick={() => { blockOrUnbolockUser(user._id) }} class="whitespace-no-wrap m-5">{user.block ? <i class="fa-solid fa-lock text-2xl text-red-600"></i> : <i class="fa-solid fa-lock-open text-2xl text-green-700"></i>}</p>
-                      </td>
+                        <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                          <p class="whitespace-no-wrap">{user.email}</p>
+                        </td>
+                        <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                          <p class="whitespace-no-wrap">{date}</p>
+                        </td>
 
-                      <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
-                        <button onClick={() => { deleteUserDetails(user._id) }} class='bg-red-600 p-2 ml-5 rounded-full pl-5 pr-5 text-white'>Delete</button>
-                      </td>
+                        <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                          <p onClick={() => { blockOrUnbolockUser(user._id) }} class="whitespace-no-wrap m-5">{user.block ? <i class="fa-solid fa-lock text-2xl text-red-600"></i> : <i class="fa-solid fa-lock-open text-2xl text-green-700"></i>}</p>
+                        </td>
 
-                    </tr>
-                  )
-                })}
+                        <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
+                          <button onClick={() => { deleteUserDetails(user._id) }} class='bg-red-600 p-2 ml-5 rounded-full pl-5 pr-5 text-white'>Delete</button>
+                        </td>
+
+                      </tr>
+                    )
+                  })}
 
 
-              </tbody>
-            </table>
-          </div>
-        </div> : <div className='flex justify-center align-middle w-full h-96 rounded-lg  border-2 border-black'><div className='mt-40 text-4xl font-semibold'>Sorry !!! Currently No Users</div></div>}
+                </tbody>
+              </table>
+            </div>
+          </div> : <div className='flex justify-center align-middle w-full h-96 rounded-lg  border-2 border-black'><div className='mt-40 text-4xl font-semibold'>Sorry !!! Currently No Users</div></div>}
       </div>
 
     </>
