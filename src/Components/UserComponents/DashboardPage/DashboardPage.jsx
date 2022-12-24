@@ -11,7 +11,7 @@ const DashboardPage = () => {
 
 
   useEffect(() => {
-    setSoket(io('http://localhost:8800'))
+    setSoket(io('http://yoduyouhou.ml:8800'))
   }, [])
 
   useEffect(() => {
