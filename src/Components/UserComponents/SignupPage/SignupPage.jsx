@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2'
 import { postUserRegister } from '../../../api/Requests/userRequests/UserRequsts'
 import './signupPage.css'
 import { ToastContainer, toast } from 'react-toastify';
@@ -21,9 +20,7 @@ const SignupPage = () => {
     const regexEmail = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
     let userInformatins = { firstName, lastName, email };
 
-
- 
-
+    // check form errors and send data to database
     useEffect(() => {
         
         if(localStorage.user){
@@ -85,6 +82,7 @@ const SignupPage = () => {
         }
     }, [frontentError])
 
+    // this function use to validate form and set form errors
     const validate = (firstName, lastName, email) => {
         // ----------------------------------- first Name verification ------------------------------------------ \\
         if (!firstName) {
@@ -116,6 +114,7 @@ const SignupPage = () => {
         return error;
     }
 
+    // this function use to submit 
     const submit = (e) => {
         setFrontError(validate(firstName, lastName, email,));
         setIsSubmit(true)

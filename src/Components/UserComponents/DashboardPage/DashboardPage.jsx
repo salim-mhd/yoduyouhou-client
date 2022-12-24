@@ -9,15 +9,17 @@ const DashboardPage = () => {
   const [userData, setUserData] = useState({})
   const [socket, setSoket] = useState(null)
 
-
+  // call socket
   useEffect(() => {
     setSoket(io('https://yoduyouhou.ml'))
   }, [])
 
+  // send data to socket
   useEffect(() => {
     socket?.emit('setdata', userData)
   }, [socket, userData])
 
+  // this function use to string reverse
   const reverseStr = () => {
     setUserData('hey')
     setString('')

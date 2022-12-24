@@ -1,4 +1,3 @@
-import React, { useContext } from 'react'
 import Swal from 'sweetalert2'
 import { useState, useEffect } from 'react'
 import { getUserDetails, changeUserStatus, deleteUser, deleteAllUser } from '../../../api/Requests/adminRequests/AdminRequests'
@@ -6,14 +5,17 @@ import { getUserDetails, changeUserStatus, deleteUser, deleteAllUser } from '../
 import { io } from 'socket.io-client'
 
 const AdminDashboard = () => {
+
   const [usersDetals, setUserDetails] = useState([])
-  const [socket, setSoket] = useState(null)
+  const [socket, setSocket] = useState(null)
   const [check, setCheck] = useState(false)
 
+  // call soket
   useEffect(() => {
-    setSoket(io('https://yoduyouhou.ml'))
+    setSocket(io('https://yoduyouhou.ml'))
   }, [])
 
+  // soket responce
   useEffect(() => {
     socket?.on('sentToAdmin', arg => {
       setCheck(!check)
@@ -24,13 +26,15 @@ const AdminDashboard = () => {
     })
   }, [socket, check])
 
-  const getUserDate = () => {
+  // this fumction use to call all user details
+  const getAllUserDetails = () => {
     getUserDetails().then((res) => {
       let users = res.data.users
       setUserDetails(users)
     })
   }
 
+  // this function use to change status block or unblock 
   const blockOrUnbolockUser = (userId) => {
     Swal.fire({
       title: 'Are you sure about status change this User ?',
@@ -42,13 +46,14 @@ const AdminDashboard = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         changeUserStatus(userId).then(() => {
-          getUserDate()
+          getAllUserDetails()
         })
       }
     })
 
   }
 
+  // this function use to delete one user details
   const deleteUserDetails = (userId) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -61,12 +66,13 @@ const AdminDashboard = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteUser(userId).then(() => {
-          getUserDate()
+          getAllUserDetails()
         })
       }
     })
   }
 
+  // this function use to delete all user details
   const deleteAllUserDetails = () => {
     Swal.fire({
       title: 'Are you sure?',
@@ -80,7 +86,7 @@ const AdminDashboard = () => {
       if (result.isConfirmed) {
         deleteAllUser().then(() => {
           localStorage.removeItem('user')
-          getUserDate()
+          getAllUserDetails()
         })
       }
     })
@@ -96,13 +102,13 @@ const AdminDashboard = () => {
             <span class="text-xs text-gray-500">View accounts of registered users</span>
           </div>
           <div class="flex items-center justify-between">
-            {usersDetals.length != 0 ? <div class="ml-10 space-x-8 lg:ml-40">
+            {usersDetals.length !== 0 ? <div class="ml-10 space-x-8 lg:ml-40">
               <button onClick={() => { deleteAllUserDetails() }} class='bg-red-600 p-2 ml-5 rounded-full pl-5 pr-5 text-white'>Delete All</button>
             </div> : <></>}
 
           </div>
         </div>
-        {usersDetals.length != 0 ?
+        {usersDetals.length !== 0 ?
           <div class="overflow-y-hidden rounded-lg border">
             <div class="overflow-x-auto">
               <table class="w-full">
@@ -117,7 +123,6 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody class="text-gray-500">
-
                   {usersDetals.map((user) => {
                     const my_date = user.createdAt;
                     let date = new Date(my_date).toString().split(' ').splice(0, 5).join(' ');
@@ -149,8 +154,6 @@ const AdminDashboard = () => {
                       </tr>
                     )
                   })}
-
-
                 </tbody>
               </table>
             </div>
